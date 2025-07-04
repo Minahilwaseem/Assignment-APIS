@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All Tasks - JSONPlaceholder API Assignment</title>
+  <!-- Axios CDN (Required for Task 2 & 4) -->
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+  <h1>All Tasks Combined</h1>
+
+  <!-- Table for Comments (Task 4) -->
+  <h2>Comments Table (Task 4)</h2>
+  <table border="1" id="commentsTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Body</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- JS will insert rows here -->
+    </tbody>
+  </table>
+
+  <script>
+    // Task 1: Fetch Albums using fetch
+    function fetchAlbums() {
+      return fetch('https://jsonplaceholder.typicode.com/albums')
+        .then(response => response.json())
+        .then(albums => {
+          const filteredAlbums = albums.filter(album => album.title && album.title.trim() !== '');
+          const simplifiedAlbums = filteredAlbums.map(album => ({
+            id: album.id,
+            title: album.title
+          }));
+          return simplifiedAlbums;
+        })
+        .catch(error => {
+          console.error('Error fetching albums:', error);
+        });
+    }
+
+    console.log("=== Task 1: Albums ===");
+    fetchAlbums().then(albums => {
+      console.log('Filtered & Simplified Albums:', albums);
+    });
+
+    // Task 2: Fetch Posts using axios
+    function fetchPosts() {
+      return axios.get('https://jsonplaceholder.typicode.com/posts')
+        .then(response => {
+          const posts = response.data;
+          const filteredPosts = posts.filter(post => post.title && post.title.trim() !== '');
+          const sortedPosts = filteredPosts.sort((a, b) => a.id - b.id);
+          return sortedPosts;
+        })
+        .catch(error => {
+          console.error('Error fetching posts:', error);
+        });
+    }
+
+    console.log("=== Task 2: Posts ===");
+    fetchPosts().then(posts => {
+      console.log('Filtered & Sorted Posts:', posts);
+    });
+
+    // Task 3: Fetch Users using fetch
+    function fetchUsers() {
+      return fetch('https://jsonplaceholder.typicode.com/users')
+        .then(response => response.json())
+        .then(users => {
+          const filteredUsers = users.filter(user => user.email && user.email.trim() !== '');
+          const usersWithPhoneCount = filteredUsers.reduce((count, user) => {
+            return (user.phone && user.phone.trim() !== '') ? count + 1 : count;
+          }, 0);
+          return {
+            filteredUsers,
+            usersWithPhoneCount
+          };
+        })
+        .catch(error => {
+          console.error('Error fetching users:', error);
+        });
+    }
+
+    console.log("=== Task 3: Users ===");
+    fetchUsers().then(result => {
+      console.log('Filtered Users with Email:', result.filteredUsers);
+      console.log('Total Users with Phone Number:', result.usersWithPhoneCount);
+    });
+
+    // Task 4: Fetch Comments using axios
+    function fetchComments() {
+      axios.get('https://jsonplaceholder.typicode.com/comments')
+        .then(response => {
+          const comments = response.data;
+          const filteredComments = comments.filter(comment => comment.name && comment.name.trim() !== '');
+          const tableBody = document.querySelector('#commentsTable tbody');
+          tableBody.innerHTML = '';
+
+          filteredComments.forEach(comment => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${comment.id}</td>
+              <td>${comment.name}</td>
+              <td>${comment.body}</td>
+            `;
+            tableBody.appendChild(row);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching comments:', error);
+        });
+    }
+
+    fetchComments();
+
+    // Task 5: Fetch Todos using fetch
+    function fetchTodos() {
+      return fetch('https://jsonplaceholder.typicode.com/todos')
+        .then(response => response.json())
+        .then(todos => {
+          const incompleteTodos = todos.filter(todo => !todo.completed);
+          const simplifiedTodos = incompleteTodos.map(todo => ({
+            id: todo.id,
+            title: todo.title
+          }));
+          return simplifiedTodos;
+        })
+        .catch(error => {
+          console.error('Error fetching todos:', error);
+        });
+    }
+
+    console.log("=== Task 5: Todos ===");
+    fetchTodos().then(todos => {
+      console.log('Incomplete & Simplified Todos:', todos);
+    });
+  </script>
+</body>
+</html>
